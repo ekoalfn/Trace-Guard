@@ -4,9 +4,6 @@ import createCriminal from "../ethereum/createCriminal.js";
 import { useRouter } from "next/router";
 import { db } from "../firebase.js";
 import { doc, setDoc } from "firebase/firestore";
-import { create } from '@web3-storage/w3up-client'
-
-const client = await create();
 
 export default function AddressForm() {
 
@@ -29,7 +26,6 @@ export default function AddressForm() {
   const [religion, setReligion] = useState("");
   const [citizenship, setCitizenship] = useState("");
   const [placeOfBirth, setPlaceOfBirth] = useState("");
-  const [image, setImage] = useState();
 
   function cancel(event) {
     event.preventDefault();
@@ -38,9 +34,9 @@ export default function AddressForm() {
 
   async function submit(event) {
     event.preventDefault();
-      await client.login('kouleroy1@gmail.com') //masukkan email web3storage
-      await client.setCurrentSpace('did:key:z6Mkuzg1AYXsbr2mKqNTD9irh7tFUUreDxXmAYmKKbxcUvMl')    //Masukkan did:key dari web3storage
-      const pid= await client.uploadDirectory(image);
+    // Hardcoded PID/CID - placeholder untuk image
+    const pid = "bafybeibqmrg5e5cd2cnu3rydqyethhz7gboqfvh4dkbzjxbpqrqcwu4aaa";
+    
     const data = [
       pid,
       name,
@@ -63,13 +59,14 @@ export default function AddressForm() {
       placeOfBirth,
     ];
     const transaction = await createCriminal.methods.createCriminal(data).send({
-      from: "0x721Af6E3A10fE402F451fEa67E5C8F7854C78353",
-      gas: 6721975,
+      from: process.env.NEXT_PUBLIC_WALLET_ADDRESS,
+      gas: parseInt(process.env.NEXT_PUBLIC_GAS_LIMIT),
     });
-    await setDoc(
-      doc(db, "create criminal transactions", transaction.transactionHash),
-      transaction
-    );
+    // Firestore logging disabled
+    // await setDoc(
+    //   doc(db, "create criminal transactions", transaction.transactionHash),
+    //   transaction
+    // );
     router.push("/");
   }
   return (
@@ -372,7 +369,8 @@ export default function AddressForm() {
         </div>
       </div>
 
-      <label
+      {/* Upload Image - Disabled (using hardcoded CID) */}
+      {/* <label
         class="block mb-2 text-sm font-medium text-white "
         for="large_size"
       >
@@ -383,8 +381,7 @@ export default function AddressForm() {
         class="p-4 block w-full text-lg text-gray-900 border border-blue-300 rounded-lg cursor-pointer bg-white  focus:outline-none focus:ring-4 focus:border-blue-50 mb-8"
         id="large_size"
         type="file"
-        required
-      ></input>
+      ></input> */}
 
       <button
         type="button"

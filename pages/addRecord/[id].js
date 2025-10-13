@@ -25,13 +25,14 @@ export default function addRecord() {
     const transaction = await criminal(id)
       .methods.addRecord(trialNumber, date, crime, jail, location)
       .send({
-        from: "0x721Af6E3A10fE402F451fEa67E5C8F7854C78353",
-        gas: 6721975,
+        from: process.env.NEXT_PUBLIC_WALLET_ADDRESS,
+        gas: parseInt(process.env.NEXT_PUBLIC_GAS_LIMIT),
       });
-    await setDoc(
-      doc(db, "add record transactions", transaction.transactionHash),
-      transaction
-    );
+    // Firestore logging disabled
+    // await setDoc(
+    //   doc(db, "add record transactions", transaction.transactionHash),
+    //   transaction
+    // );
     router.push("/CriminalDetail/" + id);
   }
 
